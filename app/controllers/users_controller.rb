@@ -1,4 +1,5 @@
 class UsersController <ApplicationController 
+    before_action :validate_user, only: :show
     def new 
         @user = User.new()
     end 
@@ -34,7 +35,7 @@ class UsersController <ApplicationController
     end
 
     def logout_user
-        session[:user_id] = nil
+        session.delete(:user_id)
         redirect_to root_path
     end
 
@@ -43,4 +44,11 @@ class UsersController <ApplicationController
     def user_params 
         params.require(:user).permit(:name, :email, :password)
     end 
+
+    def validate_user
+        unless session[:user_id]
+            flash[:errors] = "You must be a registered user to access this feature"
+            redirect_to root_path
+        end
+      end
 end 
